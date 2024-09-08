@@ -17,9 +17,6 @@ importers:
       '@toast-ui/editor':
         specifier: ^3.2.2
         version: 3.2.2
-      '@types/tinymce':
-        specifier: ^4.6.9
-        version: 4.6.9
       '@yzfe/svgicon':
         specifier: ^1.1.0
         version: 1.2.2
@@ -78,7 +75,7 @@ importers:
         specifier: ^6.0.2
         version: 6.0.2
       sortablejs:
-        specifier: ^1.15.0
+        specifier: ^1.15.3
         version: 1.15.3
       splitpanes:
         specifier: ^3.1.5
@@ -153,6 +150,12 @@ importers:
       '@types/node':
         specifier: ^20.5.9
         version: 20.16.5
+      '@types/sortablejs':
+        specifier: ^1.15.3
+        version: 1.15.3
+      '@types/tinymce':
+        specifier: ^4.6.9
+        version: 4.6.9
       '@types/yamljs':
         specifier: ^0.2.31
         version: 0.2.34
@@ -649,6 +652,9 @@ packages:
 
   '@types/sizzle@2.3.8':
     resolution: {integrity: sha512-0vWLNK2D5MT9dg0iOo8GlKguPAU02QjmZitPEsXRuJXU/OGIOt9vT9Fc26wtYuavLxtO45v9PGleoL9Z0k1LHg==}
+
+  '@types/sortablejs@1.15.3':
+    resolution: {integrity: sha512-v+zh6TZP/cLeMUK0MDx1onp8e7Jk2/4iTQ7sb/n80rTAvBm14yJkpOEfJdrTCkHiF7IZbPjxGX2NRJfogRoYIg==}
 
   '@types/strip-bom@3.0.0':
     resolution: {integrity: sha512-xevGOReSYGM7g/kUBZzPqCrR/KYAo+F0yiPc85WFTJa0MSLtyFTVTU6cJu/aV4mid7IffDIWqo69THF2o4JiEQ==}
@@ -3384,6 +3390,8 @@ snapshots:
       '@types/send': 0.17.4
 
   '@types/sizzle@2.3.8': {}
+
+  '@types/sortablejs@1.15.3': {}
 
   '@types/strip-bom@3.0.0': {}
 
