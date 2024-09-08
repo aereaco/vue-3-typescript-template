@@ -1,45 +1,15 @@
-// import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
 import LayOut from '@/layout/index.vue'
 import chartsRouter from '@/router/modules/charts'
 import nestedRouter from '@/router/modules/nested'
 import tableRouter from '@/router/modules/table'
 import componentsRouter from '@/router/modules/components'
-import {
-  createRouter,
-  createWebHashHistory,
-  type RouteRecord,
-  type RouteRecordRaw
-} from 'vue-router'
 import { markRaw } from 'vue'
 
-/*
-  Note: sub-menu only appear when children.length>=1
-  Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
-*/
-
-/*
-  name:'router-name'             the name field is required when using <keep-alive>, it should also match its component's name property
-                                 detail see : https://vuejs.org/v2/guide/components-dynamic-async.html#keep-alive-with-Dynamic-Components
-  redirect:                      if set to 'noredirect', no redirect action will be trigger when clicking the breadcrumb
-  meta: {
-    roles: ['admin', 'editor']   will control the page roles (allow setting multiple roles)
-    title: 'title'               the name showed in subMenu and breadcrumb (recommend set)
-    icon: 'svg-name'             the icon showed in the sidebar
-    hidden: true                 if true, this route will not show in the sidebar (default is false)
-    alwaysShow: true             if true, will always show the root menu (default is false)
-                                 if false, hide the root menu when has less or equal than one children route
-    breadcrumb: false            if false, the item will be hidden in breadcrumb (default is true)
-    noCache: true                if true, the page will not be cached (default is false)
-    affix: true                  if true, the tag will affix in the tags-view
-    activeMenu: '/example/list'  if set path, the sidebar will highlight the path you set
-  }
-*/
-
 /**
-  ConstantRoutes
-  a base page that does not have permission requirements
-  all roles can be accessed
-*/
+ * ConstantRoutes
+ * Static routes that are always available
+ */
 export const constantRoutes: RouteRecordRaw[] = [
   {
     path: '/redirect',
@@ -127,10 +97,10 @@ export const constantRoutes: RouteRecordRaw[] = [
 ]
 
 /**
- * asyncRoutes
- * the routes that need to be dynamically loaded based on user roles
+ * AsyncRoutes
+ * Dynamically loaded routes based on user roles
  */
-export const asyncRoutes: (RouteRecord | RouteRecordRaw)[] = [
+export const asyncRoutes: RouteRecordRaw[] = [
   {
     path: '/permission',
     component: LayOut,
@@ -138,8 +108,8 @@ export const asyncRoutes: (RouteRecord | RouteRecordRaw)[] = [
     meta: {
       title: 'permission',
       icon: 'lock',
-      roles: ['admin', 'editor'], // you can set roles in root nav
-      alwaysShow: true // will always show the root menu
+      roles: ['admin', 'editor'],
+      alwaysShow: true
     },
     children: [
       {
@@ -148,7 +118,7 @@ export const asyncRoutes: (RouteRecord | RouteRecordRaw)[] = [
         name: 'PagePermission',
         meta: {
           title: 'pagePermission',
-          roles: ['admin'] // or you can only set roles in sub nav
+          roles: ['admin']
         }
       },
       {
@@ -157,7 +127,6 @@ export const asyncRoutes: (RouteRecord | RouteRecordRaw)[] = [
         name: 'DirectivePermission',
         meta: {
           title: 'directivePermission'
-          // if do not set roles, means: this page does not require permission
         }
       },
       {
@@ -187,7 +156,7 @@ export const asyncRoutes: (RouteRecord | RouteRecordRaw)[] = [
       }
     ]
   },
-  /** when your routing map is too long, you can split it into small modules **/
+  // Include other async routes here as needed
   componentsRouter,
   chartsRouter,
   nestedRouter,
@@ -335,7 +304,7 @@ export const asyncRoutes: (RouteRecord | RouteRecordRaw)[] = [
     meta: {
       title: 'zip',
       icon: 'zip',
-      alwaysShow: true // will always show the root menu
+      alwaysShow: true
     },
     children: [
       {
@@ -399,50 +368,42 @@ export const asyncRoutes: (RouteRecord | RouteRecordRaw)[] = [
         }
       }
     ]
-  },
-  {
-    path: '/i18n',
-    component: LayOut,
-    children: [
-      {
-        path: 'index',
-        component: () => import(/* webpackChunkName: "i18n-demo" */ '@/views/i18n-demo/index.vue'),
-        name: 'I18n',
-        meta: {
-          title: 'i18n',
-          icon: 'international'
-        }
-      }
-    ]
-  },
-  {
-    path: '/redirect/https://github.com/leonibr/vue-3-typescript-template',
-    meta: {
-      title: 'externalLink',
-      icon: 'link'
-    }
-  } as unknown as RouteRecordRaw,
-  {
-    path: '/:pathMatch(.*)*',
-    redirect: '/404',
-    meta: { hidden: true }
   }
 ]
+
 const router = createRouter({
-  scrollBehavior: (to, from, savedPostion) => {
-    if (savedPostion) {
-      return savedPostion
+  history: createWebHashHistory(import.meta.env.BASE_URL),
+  routes: constantRoutes,
+  scrollBehavior: (to, from, savedPosition) => {
+    if (savedPosition) {
+      return savedPosition
     } else {
       return { x: 0, y: 0 } as ScrollToOptions
     }
-  },
-  history: createWebHashHistory(import.meta.env.BASE_URL),
-  routes: constantRoutes
+  }
 })
 
-// // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
+// Navigation guard to handle dynamic route addition
+router.beforeEach((to, from, next) => {
+  const routeExists = router.getRoutes().some(route => route.path === to.path)
+  
+  if (!routeExists && asyncRoutes.length) {
+    // Add async routes to handle the navigation
+    asyncRoutes.forEach(route => {
+      router.addRoute(route)
+    })
+    // Navigate again to the original path
+    next({ ...to, replace: true })
+  } else {
+    next()
+  }
+})
+
 export function resetRouter() {
-  const newRouter = createRouter({ history: createWebHashHistory(''), routes: [] })
+  const newRouter = createRouter({
+    history: createWebHashHistory(import.meta.env.BASE_URL),
+    routes: constantRoutes
+  })
   ;(router as any).matcher = (newRouter as any).matcher // reset router
 }
 

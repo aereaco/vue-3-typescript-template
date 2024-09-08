@@ -44,6 +44,9 @@ importers:
       file-saver:
         specifier: ^2.0.5
         version: 2.0.5
+      flatted:
+        specifier: ^3.3.1
+        version: 3.3.1
       fuse.js:
         specifier: ^6.6.2
         version: 6.6.2
